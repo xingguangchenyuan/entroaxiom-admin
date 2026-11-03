@@ -1,0 +1,353 @@
+/* ==========================================================================
+   entroaxiom 管理后台 · 「星仪」主题
+   与前台 (entroaxiom-site) 的设计令牌保持一致：深空为底、骨白文字、恒星金为主色。
+   只覆盖 CSS 变量和少量选择器，不改 Pure Admin 的组件结构；
+   主色（--el-color-primary 及其深浅梯度）由 public/platform-config.json 的 EpThemeColor 经 JS 生成，这里不写。
+   整体风格固定为深色（platform-config.json 的 OverallStyle: dark）；切到浅色后回到 Pure Admin 原样。
+   ========================================================================== */
+
+:root {
+  /* 深空 */
+  --void: #03040a;
+  --abyss: #070915;
+  --slab: #0d1020;
+  --slab-2: #141830;
+  --slab-3: #1c2140;
+
+  /* 骨白（文字） */
+  --bone: #efe8da;
+  --bone-2: #cfc8ba;
+  --dust: #a19eab;
+  --ash: #8a8898;
+
+  /* 天体色 */
+  --sol: #e9bd5e;
+  --sol-hi: #f8e0a2;
+  --sol-lo: #b98a2e;
+  --sol-ink: #1b1306;
+  --glacier: #9fd6e0;
+  --ember: #ef8456;
+  --aurora: #72e0b9;
+  --nebula: #ab93ff;
+  --rose: #f2a7c3;
+
+  /* 线与面 */
+  --line: rgb(239 232 218 / 9%);
+  --line-2: rgb(239 232 218 / 17%);
+  --glass-fill: rgb(14 16 34 / 72%);
+  --glass-border: rgb(239 232 218 / 12%);
+  --shadow-deep: 0 24px 60px -28px rgb(0 0 0 / 85%);
+
+  /* 字体：Entro Serif 的分片 @font-face 在 fonts.css；Cinzel / JetBrains Mono 管理端不打包，走系统回退 */
+  --font-display:
+    "Entro Serif", "Noto Serif SC", "Source Han Serif SC", "Songti SC",
+    "STSong", serif;
+  --font-latin: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", consolas, monospace;
+}
+
+html.dark {
+  /* ---------- Element Plus 变量 ---------- */
+  --el-bg-color: var(--slab);
+  --el-bg-color-page: var(--void);
+  --el-bg-color-overlay: var(--slab-2);
+  --el-fill-color-blank: var(--abyss);
+  --el-fill-color: rgb(239 232 218 / 7%);
+  --el-fill-color-light: rgb(239 232 218 / 5%);
+  --el-fill-color-lighter: rgb(239 232 218 / 3.5%);
+  --el-fill-color-extra-light: rgb(239 232 218 / 2.5%);
+  --el-fill-color-dark: rgb(239 232 218 / 11%);
+  --el-fill-color-darker: rgb(239 232 218 / 15%);
+  --el-text-color-primary: var(--bone);
+  --el-text-color-regular: var(--bone-2);
+  --el-text-color-secondary: var(--dust);
+  --el-text-color-placeholder: var(--ash);
+  --el-text-color-disabled: #6c6a78;
+  --el-border-color: rgb(239 232 218 / 20%);
+  --el-border-color-light: rgb(239 232 218 / 14%);
+  --el-border-color-lighter: rgb(239 232 218 / 10%);
+  --el-border-color-extra-light: rgb(239 232 218 / 6%);
+  --el-border-color-dark: rgb(239 232 218 / 28%);
+  --el-border-color-darker: rgb(239 232 218 / 38%);
+  --el-mask-color: rgb(3 4 10 / 78%);
+  --el-mask-color-extra-light: rgb(3 4 10 / 50%);
+  --el-overlay-color: rgb(3 4 10 / 72%);
+  --el-overlay-color-light: rgb(3 4 10 / 60%);
+  --el-overlay-color-lighter: rgb(3 4 10 / 45%);
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-border-radius-round: 20px;
+  --el-font-family: var(--font-sans);
+  --el-box-shadow:
+    0 12px 32px 4px rgb(0 0 0 / 50%), 0 8px 20px rgb(0 0 0 / 60%);
+  --el-box-shadow-light: 0 0 12px rgb(0 0 0 / 50%);
+  --el-box-shadow-lighter: 0 0 6px rgb(0 0 0 / 50%);
+  --el-box-shadow-dark:
+    0 16px 48px 16px rgb(0 0 0 / 55%), 0 12px 32px rgb(0 0 0 / 70%),
+    0 8px 16px -8px rgb(0 0 0 / 80%);
+
+  /* ---------- Pure Admin 变量 ---------- */
+  --pure-border-color: var(--line);
+  --pure-switch-off-color: rgb(239 232 218 / 25%);
+
+  color-scheme: dark;
+}
+
+/* 菜单配色（覆盖 theme.scss 里各个 data-theme；选择器权重更高，所以无论选哪个导航主题都是星仪色） */
+html.dark[data-theme] {
+  --pure-theme-menu-bg: var(--abyss);
+  --pure-theme-menu-hover: rgb(233 189 94 / 8%);
+  --pure-theme-sub-menu-bg: #050712;
+  --pure-theme-menu-text: var(--dust);
+  --pure-theme-menu-title-hover: var(--bone);
+  --pure-theme-sub-menu-active-text: var(--sol-hi);
+  --pure-theme-sidebar-logo: var(--abyss);
+  --pure-theme-menu-active-before: var(--sol);
+}
+
+/* ---------- 基础 ---------- */
+html.dark body {
+  font-family: var(--font-sans);
+  color: var(--bone);
+  background: var(--void);
+  -webkit-font-smoothing: antialiased;
+}
+
+html.dark ::selection {
+  color: #fff;
+  background: color-mix(in srgb, var(--sol) 40%, transparent);
+}
+
+html.dark * {
+  scrollbar-color: rgb(239 232 218 / 18%) transparent;
+  scrollbar-width: thin;
+}
+
+/* ---------- 框架：背景、侧栏、顶栏 ---------- */
+html.dark .main-container,
+html.dark .app-main,
+html.dark .app-main-nofixed-header {
+  background:
+    radial-gradient(
+      1200px 600px at 85% -10%,
+      rgb(171 147 255 / 7%),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 0% 110%,
+      rgb(233 189 94 / 5%),
+      transparent 60%
+    ),
+    var(--void) !important;
+}
+
+html.dark .navbar,
+html.dark .tags-view,
+html.dark .contextmenu,
+html.dark .horizontal-header {
+  background: var(--abyss) !important;
+  border-bottom: 1px solid var(--line);
+  box-shadow: none !important;
+}
+
+html.dark .sidebar-container,
+html.dark .sidebar-logo-container {
+  background: var(--abyss) !important;
+  border-right: 1px solid var(--line);
+}
+
+html.dark .sidebar-logo-container {
+  border-right: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+html.dark .sidebar-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--bone) !important;
+  letter-spacing: 0.04em;
+}
+
+/* 子菜单里选中的条目：金色淡底 + 浅金文字（原来是实心主色 + 白字，在金色上对比度不够） */
+html.dark .sidebar-container .el-menu-item.is-active.nest-menu::before {
+  background: color-mix(in srgb, var(--sol) 16%, transparent) !important;
+}
+
+html.dark .sidebar-container .el-menu-item.is-active.nest-menu > * {
+  color: var(--sol-hi) !important;
+}
+
+html.dark .contextmenu {
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  box-shadow: var(--shadow-deep) !important;
+}
+
+/* ---------- 卡片 / 表格 / 面板 ---------- */
+html.dark .el-card {
+  --el-card-bg-color: var(--glass-fill);
+  --el-card-border-color: var(--glass-border);
+  --el-card-border-radius: 16px;
+
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 4%),
+    var(--shadow-deep);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+html.dark .el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: rgb(239 232 218 / 4%);
+  --el-table-header-text-color: var(--bone-2);
+  --el-table-row-hover-bg-color: rgb(233 189 94 / 6%);
+  --el-table-border-color: var(--line);
+  --el-table-border: 1px solid var(--line);
+  --el-table-text-color: var(--bone-2);
+  --el-table-current-row-bg-color: rgb(233 189 94 / 10%);
+}
+
+html.dark .el-table th.el-table__cell {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- 弹层：对话框 / 抽屉 / 下拉 / 气泡 / 通知 ---------- */
+html.dark .el-dialog,
+html.dark .el-drawer,
+html.dark .el-message-box {
+  background: var(--slab-2);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-deep);
+}
+
+html.dark .el-dialog {
+  border-radius: 18px;
+}
+
+html.dark .el-dialog__title,
+html.dark .el-drawer__header,
+html.dark .el-message-box__title {
+  font-family: var(--font-display);
+  color: var(--bone);
+  letter-spacing: 0.03em;
+}
+
+html.dark .el-popper.is-light,
+html.dark .el-popper.is-pure,
+html.dark .el-select__popper.el-popper,
+html.dark .el-picker__popper.el-popper,
+html.dark .el-dropdown__popper.el-popper {
+  background: var(--slab-2);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-deep);
+}
+
+html.dark .el-popper.is-light > .el-popper__arrow::before {
+  background: var(--slab-2);
+  border-color: var(--line-2);
+}
+
+html.dark .pure-message {
+  background-color: var(--slab-3) !important;
+  border: 1px solid var(--line-2) !important;
+  box-shadow: var(--shadow-deep) !important;
+}
+
+/* ---------- 表单控件 ---------- */
+html.dark .el-input,
+html.dark .el-textarea,
+html.dark .el-select,
+html.dark .el-date-editor {
+  --el-input-border-color: var(--line-2);
+  --el-input-hover-border-color: rgb(239 232 218 / 34%);
+  --el-input-bg-color: var(--abyss);
+}
+
+html.dark .el-form-item__label {
+  color: var(--bone-2);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- 主色上的文字：金色底用深墨色，不用白字 ---------- */
+html.dark .el-button--primary:not(.is-plain, .is-text, .is-link) {
+  --el-button-text-color: var(--sol-ink);
+  --el-button-hover-text-color: var(--sol-ink);
+  --el-button-active-text-color: var(--sol-ink);
+  --el-button-disabled-text-color: var(--dust);
+  --el-button-bg-color: var(--sol);
+  --el-button-border-color: var(--sol);
+  --el-button-hover-bg-color: var(--sol-hi);
+  --el-button-hover-border-color: var(--sol-hi);
+  --el-button-active-bg-color: var(--sol-lo);
+  --el-button-active-border-color: var(--sol-lo);
+  --el-button-disabled-bg-color: rgb(233 189 94 / 16%);
+  --el-button-disabled-border-color: rgb(233 189 94 / 16%);
+
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+html.dark .el-button:not(.is-circle) {
+  border-radius: 999px;
+}
+
+html.dark .el-checkbox__input.is-checked .el-checkbox__inner::after,
+html.dark .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+  background-color: var(--sol-ink);
+  border-color: var(--sol-ink);
+}
+
+html.dark .el-checkbox__input.is-checked .el-checkbox__inner::after {
+  background-color: transparent;
+}
+
+html.dark .el-radio__input.is-checked .el-radio__inner::after {
+  background-color: var(--sol-ink);
+}
+
+html.dark .el-pagination.is-background .el-pager li.is-active,
+html.dark
+  .el-pagination.is-background
+  .el-pager
+  li:not(.is-disabled).is-active {
+  color: var(--sol-ink);
+}
+
+html.dark .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
+html.dark
+  .el-date-table
+  td.today.current:not(.disabled)
+  .el-date-table-cell__text,
+html.dark .el-month-table td.current:not(.disabled) .cell,
+html.dark .el-year-table td.current:not(.disabled) .cell {
+  color: var(--sol-ink);
+}
+
+/* ---------- 字体与标题 ---------- */
+html.dark h1,
+html.dark h2,
+html.dark h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* 面包屑、标签页用无衬线，保持后台操作区的可读性 */
+html.dark .el-breadcrumb,
+html.dark .tags-view {
+  font-family: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.dark *,
+  html.dark *::before,
+  html.dark *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,163 @@
+/* 登录页：固定为星仪深色（不随全局明暗切换），所以这里全部用字面量，不依赖 html.dark */
+.entro-login {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: #efe8da;
+  background:
+    radial-gradient(
+      900px 520px at 78% 8%,
+      rgba(171, 147, 255, 0.12),
+      transparent 62%
+    ),
+    radial-gradient(
+      760px 480px at 8% 96%,
+      rgba(233, 189, 94, 0.08),
+      transparent 62%
+    ),
+    #03040a;
+}
+
+/* 星点：几层 radial-gradient 平铺，不额外请求图片 */
+.entro-login::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    radial-gradient(
+      1.2px 1.2px at 12% 18%,
+      rgba(239, 232, 218, 0.7),
+      transparent
+    ),
+    radial-gradient(1px 1px at 28% 72%, rgba(239, 232, 218, 0.5), transparent),
+    radial-gradient(
+      1.4px 1.4px at 46% 34%,
+      rgba(159, 214, 224, 0.7),
+      transparent
+    ),
+    radial-gradient(1px 1px at 63% 86%, rgba(239, 232, 218, 0.5), transparent),
+    radial-gradient(
+      1.2px 1.2px at 81% 22%,
+      rgba(239, 232, 218, 0.65),
+      transparent
+    ),
+    radial-gradient(1px 1px at 92% 64%, rgba(233, 189, 94, 0.7), transparent);
+  background-size: 420px 420px;
+}
+
+.login-container {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 7rem);
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 100vh;
+  padding: 0 clamp(1.25rem, 4vw, 3.5rem);
+  margin: 0 auto;
+}
+
+.img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  width: min(100%, 380px);
+  padding: 36px 32px 32px;
+  text-align: center;
+  background: rgba(14, 16, 34, 0.72);
+  border: 1px solid rgba(239, 232, 218, 0.12);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 30px 80px -30px rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.avatar {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 18px;
+}
+
+.login-eyebrow {
+  margin: 0;
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: #a19eab;
+  text-transform: uppercase;
+}
+
+.login-form h2 {
+  margin: 8px 0 24px;
+  font-family:
+    "Entro Serif", "Noto Serif SC", "Source Han Serif SC", "Songti SC",
+    "STSong", serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #efe8da;
+}
+
+/* 输入框和按钮沿用全局 Element Plus 变量，这里只在登录页（始终深色）补一层，保证浅色模式下也可读 */
+.entro-login .el-input {
+  --el-input-bg-color: #070915;
+  --el-input-border-color: rgba(239, 232, 218, 0.2);
+  --el-input-hover-border-color: rgba(239, 232, 218, 0.34);
+  --el-input-text-color: #efe8da;
+  --el-input-placeholder-color: #8a8898;
+  --el-input-icon-color: #a19eab;
+}
+
+.entro-login .el-button--primary {
+  --el-button-text-color: #1b1306;
+  --el-button-hover-text-color: #1b1306;
+  --el-button-active-text-color: #1b1306;
+  --el-button-bg-color: #e9bd5e;
+  --el-button-border-color: #e9bd5e;
+  --el-button-hover-bg-color: #f8e0a2;
+  --el-button-hover-border-color: #f8e0a2;
+  --el-button-active-bg-color: #b98a2e;
+  --el-button-active-border-color: #b98a2e;
+  --el-button-disabled-text-color: #a19eab;
+  --el-button-disabled-bg-color: rgba(233, 189, 94, 0.16);
+  --el-button-disabled-border-color: rgba(233, 189, 94, 0.16);
+
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+}
+
+@media screen and (max-width: 968px) {
+  .login-container {
+    /* minmax(0, 1fr)：不让表单卡片的固有宽度把列撑得比屏幕宽 */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .img {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entro-login * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}

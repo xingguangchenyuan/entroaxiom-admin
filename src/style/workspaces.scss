@@ -1,0 +1,410 @@
+/* ==========================================================================
+   entroaxiom 管理后台 · 工作区版式（星仪主题的页面层）
+   只放“页面骨架 + 数据密度”相关的类，具体页面尽量复用这些类，
+   避免每个页面各写一套间距，最后看起来像三个人做的后台。
+   ========================================================================== */
+
+.ws-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1560px;
+  padding: 22px 26px 40px;
+  margin: 0 auto;
+}
+
+.ws-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--sol);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  opacity: 0.85;
+}
+
+.ws-title {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--bone);
+  letter-spacing: 0.02em;
+}
+
+.ws-sub {
+  max-width: 62ch;
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--dust);
+}
+
+.ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 工具栏：筛选、搜索、视图切换 */
+.ws-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgb(239 232 218 / 2.6%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.ws-toolbar__spacer {
+  flex: 1 1 auto;
+}
+
+/* 面板：比 el-card 更薄，用于表格与详情 */
+.ws-panel {
+  overflow: hidden;
+  background: var(--glass-fill);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.ws-panel__head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-panel__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--bone);
+  letter-spacing: 0.03em;
+}
+
+.ws-panel__body {
+  padding: 16px;
+}
+
+/* 元信息：等宽数字 + 稀疏标签，像仪器读数 */
+.ws-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ash);
+  letter-spacing: 0.04em;
+}
+
+.ws-meta__item {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.ws-meta__label {
+  color: var(--ash);
+  opacity: 0.8;
+}
+
+.ws-meta__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--bone-2);
+}
+
+.ws-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.ws-mono {
+  font-family: var(--font-mono);
+}
+
+/* 统计格 */
+.ws-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 12px;
+}
+
+.ws-stat {
+  position: relative;
+  padding: 16px 18px;
+  background:
+    linear-gradient(160deg, rgb(233 189 94 / 5%), transparent 46%),
+    rgb(239 232 218 / 2%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.ws-stat__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.ws-stat__value {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--bone);
+}
+
+.ws-stat__hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--dust);
+}
+
+/* 空状态 */
+.ws-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 54px 20px;
+  color: var(--dust);
+  text-align: center;
+}
+
+.ws-empty__glyph {
+  font-family: var(--font-display);
+  font-size: 34px;
+  color: var(--sol);
+  opacity: 0.5;
+}
+
+.ws-empty__title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--bone);
+}
+
+.ws-empty__desc {
+  max-width: 46ch;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 表格里的次要文本 */
+.ws-cell-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ash);
+}
+
+.ws-cell-title {
+  color: var(--bone);
+}
+
+.ws-cell-title:hover {
+  color: var(--sol-hi);
+}
+
+/* 状态点：用颜色 + 文字双重表达，不只靠颜色 */
+.ws-pill {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 9px 2px 7px;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--bone-2);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+}
+
+.ws-pill::before {
+  width: 6px;
+  height: 6px;
+  content: "";
+  background: currentcolor;
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.ws-pill--draft {
+  color: var(--dust);
+}
+
+.ws-pill--published {
+  color: var(--aurora);
+  border-color: color-mix(in srgb, var(--aurora) 34%, transparent);
+}
+
+.ws-pill--private {
+  color: var(--nebula);
+  border-color: color-mix(in srgb, var(--nebula) 34%, transparent);
+}
+
+.ws-pill--public {
+  color: var(--glacier);
+  border-color: color-mix(in srgb, var(--glacier) 30%, transparent);
+}
+
+.ws-pill--warn {
+  color: var(--sol);
+  border-color: color-mix(in srgb, var(--sol) 34%, transparent);
+}
+
+.ws-pill--danger {
+  color: var(--ember);
+  border-color: color-mix(in srgb, var(--ember) 36%, transparent);
+}
+
+.ws-pill--mute {
+  color: var(--ash);
+}
+
+/* 两栏：列表 + 详情 */
+.ws-split {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+@media (width <= 1200px) {
+  .ws-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 编辑器：编辑 / 预览并排 */
+.ws-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+@media (width <= 1100px) {
+  .ws-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ws-editor__pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ws-editor__pane + .ws-editor__pane {
+  border-left: 1px solid var(--line);
+}
+
+@media (width <= 1100px) {
+  .ws-editor__pane + .ws-editor__pane {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}
+
+.ws-editor__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgb(239 232 218 / 3%);
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-editor__textarea {
+  flex: 1;
+  min-height: 460px;
+}
+
+.ws-editor__textarea textarea {
+  height: 100%;
+  min-height: 460px;
+  padding: 16px 18px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.9;
+  tab-size: 2;
+  resize: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.ws-editor__preview {
+  flex: 1;
+  max-height: 72vh;
+  padding: 18px 22px 40px;
+  overflow: auto;
+}
+
+/* 抽屉里的表单更紧凑 */
+.ws-drawer-form {
+  padding-right: 6px;
+}
+
+.ws-hint {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ash);
+}
+
+.ws-hint--warn {
+  color: var(--sol);
+}
+
+.ws-hint--danger {
+  color: var(--ember);
+}
+
+.ws-rule {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--line);
+  border: 0;
+}
+
+/* 资源缩略图 */
+.ws-thumb {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgb(239 232 218 / 4%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.ws-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 表格行可点：给出光标与轻微提示 */
+.ws-row-click .el-table__row {
+  cursor: pointer;
+}
