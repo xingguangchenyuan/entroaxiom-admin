@@ -2510,6 +2510,201 @@ route("delete", /^\/imports\/([^/]+)$/, (config, match) => {
 });
 
 /* ------------------------------------------------------------------ *
+ * 日志中心
+ *
+ * 真后端读的是 /var/log 下的文件；替身没有文件系统，所以这里造一批
+ * 形状完全一致的样本行，让筛选、聚合、拦截列表都能被点出来。
+ * 数字故意造得难看一点（扫描器打 .env、401 爆破），免得界面看起来岁月静好。
+ * ------------------------------------------------------------------ */
+
+const LOG_SOURCES = [
+  { id: "nginx-access", label: "Web 访问", kind: "access" },
+  { id: "nginx-error", label: "Web 错误", kind: "error" },
+  { id: "api", label: "程序日志", kind: "app" },
+  { id: "backup", label: "备份日志", kind: "backup" }
+];
+
+const SUSPECT_PATH = /\.env|\/\.git|wp-admin|phpmyadmin|xmlrpc|cgi-bin|\/etc\/passwd/i;
+
+function mockLogs() {
+  const out: Array<Record<string, any>> = [];
+  const scanners = ["45.148.10.83", "81.171.72.93", "162.142.125.7", "89.248.165.14"];
+  const visitors = ["122.51.236.174", "223.104.6.31", "112.65.12.9"];
+  const targets = [
+    "/api/.env",
+    "/.git/config",
+    "/wp-admin/setup-config.php",
+    "/phpmyadmin/index.php",
+    "/xmlrpc.php",
+    "/shell",
+    "/boaform/admin/formLogin"
+  ];
+
+  for (let i = 0; i < 60; i += 1) {
+    const suspect = i % 3 === 0;
+    const ip = suspect
+      ? scanners[i % scanners.length]
+      : visitors[i % visitors.length];
+    const path = suspect
+      ? targets[i % targets.length]
+      : ["/", "/essays", "/notes", "/atlas", "/api/public/essays"][i % 5];
+    const status = suspect ? [401, 403, 429, 404][i % 4] : 200;
+    const time = new Date(Date.now() - i * 137000).toISOString();
+    out.push({
+      id: "mock-access-" + i,
+      source: "nginx-access",
+      sourceLabel: "Web 访问",
+      kind: "access",
+      time,
+      level: null,
+      status,
+      method: suspect ? "GET" : ["GET", "GET", "POST"][i % 3],
+      path,
+      ip,
+      message: suspect ? "扫描器探测" : "正常访问",
+      detail:
+        ip + ' - - [' + time + '] "GET ' + path + ' HTTP/1.1" ' + status + ' 178 "-" "Mozilla/5.0"',
+      suspect: suspect && SUSPECT_PATH.test(path)
+    });
+  }
+
+  for (let i = 0; i < 14; i += 1) {
+    const time = new Date(Date.now() - i * 611000).toISOString();
+    const bad = i % 4 === 0;
+    out.push({
+      id: "mock-api-" + i,
+      source: "api",
+      sourceLabel: "程序日志",
+      kind: "app",
+      time,
+      level: bad ? "error" : i % 3 === 0 ? "warn" : "info",
+      status: bad ? 500 : 200,
+      method: "GET",
+      path: "/api/admin/logs",
+      ip: "127.0.0.1",
+      message: bad ? "request errored" : "request completed",
+      detail: JSON.stringify({
+        level: bad ? 50 : 30,
+        reqId: "req-" + i,
+        res: { statusCode: bad ? 500 : 200 }
+      }),
+      suspect: false
+    });
+  }
+
+  return out;
+}
+
+const MOCK_LOGS = mockLogs();
+
+const MOCK_CF_EVENTS = Array.from({ length: 6 }, (_, i) => ({
+  action: i % 3 === 0 ? "block" : i % 3 === 1 ? "challenge" : "managedChallenge",
+  datetime: new Date(Date.now() - i * 3600000).toISOString(),
+  clientIP: ["45.148.10.83", "81.171.72.93", "162.142.125.7"][i % 3],
+  path: ["/api/.env", "/.git/config", "/wp-login.php"][i % 3],
+  userAgent: "python-requests/2.31",
+  ruleId: "rule-" + (1000 + i),
+  count: 3 + i
+}));
+
+route("get", /^\/logs\/sources$/, config => ok(config, clone(LOG_SOURCES)));
+
+route("get", /^\/logs$/, (config, _match, params) => {
+  const source = params.get("source") ?? "";
+  const level = params.get("level") ?? "";
+  const status = params.get("status") ?? "";
+  const keyword = (params.get("q") ?? "").trim().toLowerCase();
+  const suspect = params.get("suspect") === "true";
+  const tail = Number(params.get("tail") ?? 200);
+
+  const matched = MOCK_LOGS.filter(entry => {
+    if (source && entry.source !== source) return false;
+    if (level && entry.level !== level) return false;
+    if (status && String(entry.status) !== status) return false;
+    if (suspect && !entry.suspect) return false;
+    if (keyword) {
+      const hay = [entry.path, entry.ip, entry.message, entry.detail]
+        .join(" ")
+        .toLowerCase();
+      if (!hay.includes(keyword)) return false;
+    }
+    return true;
+  }).sort((a, b) => String(b.time).localeCompare(String(a.time)));
+
+  return ok(config, {
+    items: clone(matched.slice(0, tail)),
+    total: matched.length,
+    truncated: false,
+    generatedAt: new Date().toISOString(),
+    sources: clone(LOG_SOURCES)
+  });
+});
+
+route("get", /^\/logs\/security$/, (config, _match, params) => {
+  const hours = Number(params.get("hours") ?? 24);
+  const since = Date.now() - hours * 3600000;
+  const hit = MOCK_LOGS.filter(
+    entry =>
+      entry.suspect && new Date(String(entry.time)).getTime() >= since
+  );
+
+  const bucket = (key: (entry: Record<string, any>) => string) => {
+    const map = new Map<
+      string,
+      { count: number; lastSeen: string; sample: string }
+    >();
+    for (const entry of hit) {
+      const k = key(entry) || "—";
+      const current = map.get(k);
+      if (current) {
+        current.count += 1;
+        if (String(entry.time) > current.lastSeen) {
+          current.lastSeen = String(entry.time);
+        }
+      } else {
+        map.set(k, {
+          count: 1,
+          lastSeen: String(entry.time),
+          sample: entry.detail
+        });
+      }
+    }
+    return [...map.entries()]
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 20);
+  };
+
+  return ok(config, {
+    hours,
+    total: hit.length,
+    ips: bucket(entry => String(entry.ip)),
+    paths: bucket(entry => String(entry.path)),
+    statuses: bucket(entry => String(entry.status)),
+    recent: clone(hit.slice(0, 100))
+  });
+});
+
+route("get", /^\/logs\/cloudflare$/, (config, _match, params) => {
+  const hours = Number(params.get("hours") ?? 24);
+  const events = MOCK_CF_EVENTS.filter(
+    entry =>
+      new Date(entry.datetime).getTime() >= Date.now() - hours * 3600000
+  );
+  return ok(config, {
+    configured: true,
+    note: "开发替身：这里的拦截事件是编的，接上真后端后来自 Cloudflare GraphQL。",
+    hours,
+    events,
+    totals: {
+      blocked: events.filter(e => e.action === "block").length,
+      challenged: events.filter(e => e.action !== "block").length,
+      other: 0
+    }
+  });
+});
+
+/* ------------------------------------------------------------------ *
  * 适配器
  * ------------------------------------------------------------------ */
 

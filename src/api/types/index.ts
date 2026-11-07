@@ -5,3 +5,4 @@ export * from "./shelf";
 export * from "./guestbook";
 export * from "./moderation";
 export * from "./imports";
+export * from "./logs";
